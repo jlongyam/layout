@@ -1,0 +1,28 @@
+:root {
+  --base_size_font: 16px;
+  --base_size_border: 2px;
+  font: normal normal var(--base_size_font)/1.5 monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: gray;
+  color: white;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: var(--base_size_font);
+  padding: var(--base_size_font);
+  background-color: silver;
+  color: black;
+  height: calc(100% - calc(var(--base_size_font) * 2));
+  overflow: auto;
+}
+

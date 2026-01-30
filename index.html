@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complex</title>
+  <link rel="stylesheet" href="layout/complex.css">
+  <!-- <script src="https://unpkg.com/twind/twind.umd.js"></script> -->
+  <style>
+    .complex.horizontal > .center {
+      background-color: silver;
+    }
+  </style>
+</head>
+<body>
+  <h3>Complex Horizontal</h3>
+  <div class="complex horizontal">
+    <div class="top">
+      <div class="tl">TL</div>
+      <div class="tc">TC</div>
+      <div class="tr">TR</div>
+    </div>
+    <div class="center">
+      <div class="lc">LC</div>
+      <div class="cc">CC</div>
+      <div class="rc">RC</div>
+    </div>
+    <div class="bottom">
+      <div class="bl">BL</div>
+      <div class="bc">BC</div>
+      <div class="br">BR</div>
+    </div>
+  </div>
+  <br>
+  <h3>Complex Vertical</h3>
+  <div class="complex vertical">
+    <div>LEFT</div>
+    <div>CENTER</div>
+    <div>RIGHT</div>
+  </div>
+  <script>
+    // var $ = twind.tw
+    // const content = `
+    //   <div class="${$`border-2`}">CONTENT</div>
+    // `
+    // document.body.innerHTML = content
+  </script>
+</body>
+</html>
