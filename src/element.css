@@ -7,9 +7,5 @@ body {
 }
 iframe {
   border: 0;
-  width: 10rem;
-  height: 6rem;
-  margin: 4px;
-  margin-right: -4px;
-  margin-bottom: -4px;
+  height: 15rem;
 }

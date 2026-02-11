@@ -47,6 +47,7 @@
 
 .layout-content-type-1 {
   box-sizing: border-box;
+  min-height: 0;
   padding: 4px;
   border: 2px solid silver;
 }

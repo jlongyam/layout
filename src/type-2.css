@@ -1,0 +1,22 @@
+.layout-container-type-2 {
+  box-sizing: border-box;
+  display: flex;
+  min-height: 0;
+  height: 100%;
+  border: 2px solid gray;
+  flex-wrap: wrap;
+  &.h {
+    flex-direction: row;
+  }
+  &.v {
+    flex-direction: column;
+  }
+}
+
+.layout-content-type-2 {
+  box-sizing: border-box;
+  padding: 4px;
+  border: 2px solid silver;
+  flex: 1;
+  min-height: 0;
+}
