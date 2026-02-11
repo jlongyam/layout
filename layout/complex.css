@@ -1,6 +1,0 @@
-@import url('document.css');
-
-.complex.horizontal > :where(.top, .center, .bottom)  {
-  display: flex;
-  justify-content: space-between;
-}

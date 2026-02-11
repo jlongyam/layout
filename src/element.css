@@ -1,0 +1,15 @@
+html {
+  height: 100%;
+}
+body {
+  margin: 0;
+  height: 100%;
+}
+iframe {
+  border: 0;
+  width: 10rem;
+  height: 6rem;
+  margin: 4px;
+  margin-right: -4px;
+  margin-bottom: -4px;
+}
