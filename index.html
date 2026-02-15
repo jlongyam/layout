@@ -3,13 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Index</title>
+  <title>Test</title>
+  <base target="iframe">
+  <style>
+    @import url("src/global.css");
+    @import url("src/element.css");
+    body {
+      position: relative;
+      overflow: hidden;
+      font: normal 16px/1.5 monospace;
+    }
+    aside {
+      --nav-width: 250px; 
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 50%;
+      overflow: auto;
+    }
+    aside#left {
+      width: var(--nav-width);
+      background-color: #272a36;
+      color: whitesmoke;
+      border-right: 2px solid silver;
+    }
+    aside#right {
+      right: 0;
+      width: calc(100% - var(--nav-width));
+      overflow: hidden;
+    }
+    main#iframe_container {
+      height: 100%;
+    }
+    iframe {
+      border: none;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+    ul {
+      padding-inline-start: 1.5em;
+    }
+    a {
+      color: #03a9f4
+    }
+    h1 {
+      margin-left: 8px;
+    }
+  </style>
 </head>
 <body>
-  <h2>Test</h2>
-  <ul>
-    <li><a href="test/content.html">Content</a></li>
-    <li><a href="test/section.html">Section</a></li>
-  </ul>
+  <aside id="left">
+    <nav>
+      <h1>Test</h1>
+      <ul>
+        <li>
+          <b><a href="test/content/default.html">Content</a></b>
+          <ul>
+            <li><a href="test/content/tl.html">TL</a></li>
+            <li><a href="test/content/tc.html">TC</a></li>
+            <li><a href="test/content/tr.html">TR</a></li>
+            <li><a href="test/content/cl.html">CL</a></li>
+            <li><a href="test/content/cc.html">CC</a></li>
+            <li><a href="test/content/cr.html">CR</a></li>
+            <li><a href="test/content/bl.html">BL</a></li>
+            <li><a href="test/content/bc.html">BC</a></li>
+            <li><a href="test/content/br.html">BR</a></li>
+          </ul>
+        </li>
+         <li>
+          <b><a href="test/section/default.html">Section</a></b>
+          <ul>
+            <li><a href="test/section/grow.html">Grow</a></li>
+          </ul>
+        </li>
+        <li>
+          <b><a href="test/container/default.html">Container</a></b>
+          <ul>
+            <li><a href="test/container/v.html">V</a></li>
+            <li><a href="test/container/h.html">H</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+  <aside id="right">
+    <main id="iframe_container">
+      <iframe name="iframe" src="test/content/default.html"></iframe>
+    </main>
+  </aside>
 </body>
 </html>
