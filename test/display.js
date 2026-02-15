@@ -44,7 +44,7 @@ window.addEventListener('load', function () {
     var txt_html = document.getElementById('txt_html');
     function previewHtml() {
       writeToIframe('preview', contentHtml({
-        link: `${src}/index.css`,
+        link: `${src}/../dist/layout.css`,
         body: txt_html.value
       }))
     }

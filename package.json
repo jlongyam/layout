@@ -1,21 +1,27 @@
 {
-  "name": "layout",
+  "name": "@jlongyam/layout",
   "version": "1.0.0",
-  "description": "need stylizer",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "Simple CSS Layout",
+  "keywords": ["layout", "css"],
+  "author": "jlongyam",
+  "license": "MIT",
+  "homepage": "https://github.com/jlongyam/layout",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jlongyam/layout.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/jlongyam/layout/issues"
+  "main": "index.html",
+  "scripts": {
+    "build": "bun build --css-chunk --outfile=dist/layout.css src/index.css"
   },
-  "homepage": "https://github.com/jlongyam/layout#readme"
+  "files": [
+    "test",
+    "src",
+    "dist",
+    "index.html"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com/"
+  }
 }

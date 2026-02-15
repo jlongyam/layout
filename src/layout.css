@@ -62,14 +62,33 @@
   &.v {
     flex-direction: column;
   }
-}
-.section {
-  min-height: 0;
-  &.test {
-    border: 2px solid silver;
-    padding: 4px;;
+  &.start {
+    justify-content: flex-start;
   }
-  &.grow {
-    flex: 1;
+  &.center {
+    justify-content: center;
+  }
+  &.end {
+    justify-content: flex-end;
+  }
+  &.around {
+    justify-content: space-around;
+  }
+  &.between {
+    justify-content: space-between;
+  }
+  &.evenly {
+    justify-content: space-evenly;
+  }
+  &.section {
+    min-height: 0;
+    &.test {
+      border: 2px solid silver;
+      padding: 4px;;
+    }
+    &.grow {
+      --grow: 1;
+      flex: var(--grow);
+    }
   }
 }

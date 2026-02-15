@@ -1,3 +1,5 @@
 # layout
 
-need stylizer
+Simple CSS Layout
+
+[Demo](https://jlongyam.github.io/layout/)

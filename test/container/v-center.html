@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="content-type" content="text/html">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>test: section grow</title>
+  <title>test: container v center</title>
   <script src="../display.js" data-src="../../src"></script>
 </head>
 
@@ -13,9 +13,10 @@
   <script>
     window.addEventListener('load', function () {
       displayHtml(`
-        <div class="test layout container">
-          <div class="test layout section grow">left</div>
+        <div class="test layout container v center">
+          <div class="test layout section">top</div>
           <div class="test layout section content cc">CC</div>
+          <div class="test layout section">bottom</div>
         </div>
       `)
     });
