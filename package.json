@@ -12,7 +12,7 @@
   },
   "main": "index.html",
   "scripts": {
-    "build": "bun build --css-chunk --outfile=dist/layout.css src/index.css"
+    "build": "bun build --css-chunk --outfile=dist/layout.css src/export.css"
   },
   "files": [
     "test",

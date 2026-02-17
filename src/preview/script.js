@@ -44,7 +44,7 @@ function sourceCode(config = {}) {
   var comp = `
     <details${option.open ? ' open' : ''} name="accordion">
       <summary>${option.title}</summary>
-      <textarea id="${option.id}">${option.content}</textarea>
+      <textarea id="${option.id}" wrap="off">${option.content}</textarea>
     </details>
   `;
   return comp;

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="content-type" content="text/html">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>test: scrollable sizing</title>
+  <script src="../display.js" data-src="../../src"></script>
+</head>
+
+<body>
+  <script>
+    window.addEventListener('load', function () {
+      displayHtml(`
+        <div class="test layout content" style="width: 100%; height: 100%">
+          <div class="test layout scrollable" style="width: 100%; height: 100%">
+            <div style="width: 2000px; height: 2000px">CONTENT</div>
+          </div>
+        </div>
+      `)
+    });
+  </script>
+
+</html>
