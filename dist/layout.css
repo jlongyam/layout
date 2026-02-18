@@ -1,5 +1,5 @@
 /* src/element/global.css */
-*, :before, :after {
+*, *:before, *:after {
   box-sizing: border-box;
 }
 
@@ -23,127 +23,132 @@ body {
 
 
 /* src/layout.css */
-.layout {
+.content {
   --line-height: 1.5em;
-}
-
-.layout.test {
-  font: normal 16px / var(--line-height) ui-monospace, monospace;
-  border: 2px solid gray;
-  padding: 4px;
-}
-
-.layout.content {
   display: flex;
   min-height: calc(var(--line-height) * 3);
   flex-flow: column wrap;
 }
 
-.layout.content.tl {
+.content.test {
+  font: normal 16px / var(--line-height) ui-monospace, monospace;
+  border: 2px solid silver;
+  padding: 4px;
+}
+
+.content.tl {
   place-content:  flex-start;
 }
 
-.layout.content.tc {
+.content.tc {
   place-content:  center flex-start;
 }
 
-.layout.content.tr {
+.content.tr {
   place-content:  flex-end flex-start;
 }
 
-.layout.content.cl {
+.content.cl {
   place-content:  flex-start center;
 }
 
-.layout.content.cc {
+.content.cc {
   place-content:  center;
 }
 
-.layout.content.cr {
+.content.cr {
   place-content:  flex-end center;
 }
 
-.layout.content.bl {
+.content.bl {
   place-content:  flex-start flex-end;
 }
 
-.layout.content.bc {
+.content.bc {
   place-content:  center flex-end;
 }
 
-.layout.content.br {
+.content.br {
   place-content:  flex-end;
 }
 
-.layout.container {
+.container {
   display: flex;
-  flex-wrap: wrap;
+  --line-height: 1.5em;
   width: 100%;
   min-width: 0;
   height: 100%;
   min-height: 0;
 }
 
-.layout.container.h {
+.container.test {
+  font: normal 16px / var(--line-height) ui-monospace, monospace;
+  border: 2px solid gray;
+}
+
+.container.h {
   flex-direction: row;
 }
 
-.layout.container.v {
+.container.v {
   flex-direction: column;
 }
 
-.layout.container.start {
+.container.start {
   justify-content: flex-start;
 }
 
-.layout.container.center {
+.container.center {
   justify-content: center;
 }
 
-.layout.container.end {
+.container.end {
   justify-content: flex-end;
 }
 
-.layout.container.around {
+.container.around {
   justify-content: space-around;
 }
 
-.layout.container.between {
+.container.between {
   justify-content: space-between;
 }
 
-.layout.container.evenly {
+.container.evenly {
   justify-content: space-evenly;
 }
 
-.layout.section {
+.container.wrap {
+  flex-wrap: wrap;
+}
+
+.section {
   min-width: 0;
   min-height: 0;
 }
 
-.layout.section.test {
+.section.test {
   border: 2px solid silver;
   padding: 4px;
 }
 
-.layout.section.grow {
+.section.grow {
   --grow: 1;
   flex: var(--grow);
 }
 
-.layout.section.gap {
+.section.gap {
   --gap: 4px;
 }
 
-.layout.container.v .layout.section.gap {
+.container.v .section.gap {
   margin-block: var(--gap);
 }
 
-.layout.container.h .layout.section.gap {
+.container.h .section.gap {
   margin-inline: var(--gap);
 }
 
-/* src/modifier/scrollable.css */
 .scrollable {
   --scrollbar_color-bg: silver;
   --scrollbar_color-fg: gray;
@@ -152,6 +157,10 @@ body {
   overflow: auto;
   scrollbar-color: var(--scrollbar_color-fg) var(--scrollbar_color-bg);
   scrollbar-width: thin;
+}
+
+.scrollable.test {
+  border: 2px solid gray;
 }
 
 .scrollable.x {
@@ -183,7 +192,7 @@ body {
   background-color: var(--scrollbar_color-fg_active);
 }
 
-:has( > .scrollable) {
+.noscroll {
   overflow: hidden;
 }
 
