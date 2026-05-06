@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout Framework v2 — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pattern.css">
+<style>
+/* ── Demo chrome (not part of framework) ─────────────────── */
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* hero */
+.hero {
+  padding-block: var(--space-9) var(--space-7);
+  padding-inline: var(--space-6);
+  border-block-end: 1px solid var(--color-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  inline-size: 600px;
+  block-size: 600px;
+  background: radial-gradient(circle at 70% 30%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-block-end: var(--space-4);
+}
+
+.hero-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-block-end: var(--space-4);
+}
+
+.hero-title em {
+  font-style: normal;
+  color: var(--color-accent);
+}
+
+.hero-sub {
+  color: var(--color-muted);
+  max-inline-size: 60ch;
+  margin-block-end: var(--space-6);
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 99px;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  color: var(--color-accent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+/* theme toggle */
+.theme-btn {
+  position: fixed;
+  inset-block-start: var(--space-4);
+  inset-inline-end: var(--space-4);
+  z-index: 100;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 99px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: border-color .2s, background .2s;
+}
+.theme-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+/* section scaffolding */
+.demo-wrap {
+  max-inline-size: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+  padding-block: var(--space-8);
+}
+
+.section { margin-block-end: var(--space-9); }
+
+.section-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-block-end: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.section-tag::after { content: ''; flex: 1; block-size: 1px; background: var(--color-border); }
+
+.section-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-block-end: var(--space-2);
+  letter-spacing: -0.02em;
+}
+
+.section-desc {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  margin-block-end: var(--space-5);
+  max-inline-size: 72ch;
+}
+
+.api-note {
+  background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+  border-inline-start: 3px solid var(--color-accent);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0 6px 6px 0;
+  margin-block-end: var(--space-5);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.api-note strong { color: var(--color-accent); }
+.api-note code   { color: var(--color-text); font-size: 0.72rem; }
+
+/* demo cells */
+.cell {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.68rem;
+  color: var(--color-muted);
+  min-block-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: background .15s, border-color .15s, color .15s;
+}
+
+.cell:hover    { background: color-mix(in srgb, var(--color-accent) 6%, var(--color-surface)); border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); color: var(--color-accent); }
+.cell--accent  { background: color-mix(in srgb, var(--color-accent) 10%, transparent); border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); color: var(--color-accent); }
+.cell--tall    { min-block-size: 90px; }
+.cell--taller  { min-block-size: 130px; }
+
+/* label */
+.label {
+  font-size: 0.65rem;
+  color: var(--color-muted);
+  letter-spacing: 0.08em;
+  margin-block-end: var(--space-2);
+  opacity: .7;
+}
+
+/* block wrapper */
+.demo-block {
+  background: color-mix(in srgb, var(--color-surface) 40%, transparent);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: var(--space-5);
+  margin-block-end: var(--space-5);
+}
+
+.demo-block-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-muted);
+  margin-block-end: var(--space-4);
+  padding-block-end: var(--space-3);
+  border-block-end: 1px solid var(--color-border);
+}
+
+/* pill */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+.pill--accent { background: color-mix(in srgb, var(--color-accent) 10%, transparent); border-color: color-mix(in srgb, var(--color-accent) 30%, transparent); color: var(--color-accent); }
+
+/* card */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: var(--space-5);
+}
+.card__eyebrow { font-size: 0.65rem; text-transform: uppercase; letter-spacing: .12em; color: var(--color-accent); margin-block-end: var(--space-2); }
+.card__title   { font-family: 'Unbounded', sans-serif; font-size: 0.95rem; font-weight: 700; margin-block-end: var(--space-2); letter-spacing: -0.02em; }
+.card__body    { font-size: 0.78rem; color: var(--color-muted); line-height: 1.7; }
+.card__img     { border-radius: 6px; background: var(--color-border); block-size: 120px; inline-size: 100%; object-fit: cover; margin-block-end: var(--space-4); }
+
+/* masonry items */
+.masonry-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-4) var(--space-5);
+}
+.masonry-item__bar {
+  block-size: var(--bar-h, 60px);
+  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+  border-radius: 4px;
+  margin-block-end: var(--space-3);
+}
+.masonry-item p { font-size: 0.75rem; color: var(--color-muted); }
+
+/* overlay demo */
+.overlay-demo-img {
+  block-size: 220px;
+  background: linear-gradient(135deg, #1a2a1a, #0a0a1a);
+  border-radius: 10px;
+  inline-size: 100%;
+}
+.overlay-badge {
+  background: color-mix(in srgb, var(--color-accent) 90%, black);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 4px;
+  margin: var(--space-3);
+}
+.overlay-caption {
+  background: color-mix(in srgb, black 70%, transparent);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  padding: var(--space-4) var(--space-5);
+  inline-size: 100%;
+  font-size: 0.8rem;
+}
+
+/* reel item */
+.reel-item {
+  inline-size: 200px;
+  block-size: 110px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+/* CQ card demo */
+.cq-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 900px) { .cq-demo-grid { grid-template-columns: 1fr; } }
+
+.cq-demo-panel {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: var(--space-4);
+  overflow: hidden;
+}
+.cq-demo-panel__label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--color-muted);
+  margin-block-end: var(--space-3);
+  text-align: center;
+}
+
+.cq-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 8px; padding: var(--space-4); }
+.cq-card__media { border-radius: 6px; background: color-mix(in srgb, var(--color-accent) 15%, transparent); block-size: 80px; }
+.cq-card__title { font-family: 'Unbounded', sans-serif; font-size: 0.8rem; font-weight: 700; margin-block-end: var(--space-1); }
+.cq-card__body  { font-size: 0.72rem; color: var(--color-muted); }
+
+/* subgrid demo */
+.subgrid-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-4);
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+  gap: var(--space-2);
+}
+.subgrid-card__top    { font-size: 0.65rem; color: var(--color-accent); text-transform: uppercase; letter-spacing: .1em; }
+.subgrid-card__mid    { font-family: 'Unbounded', sans-serif; font-size: 0.9rem; font-weight: 700; }
+.subgrid-card__bottom { font-size: 0.75rem; color: var(--color-muted); }
+
+/* holy grail demo */
+.holy-grail-demo {
+  block-size: 320px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.68rem;
+}
+
+.hg-region {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  text-align: center;
+}
+.hg-region--accent { background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface)); color: var(--color-accent); }
+
+/* RTL demo */
+.rtl-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+@media (max-width: 600px) { .rtl-demo { grid-template-columns: 1fr; } }
+
+.rtl-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-4);
+}
+.rtl-panel__label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: .12em; color: var(--color-accent); margin-block-end: var(--space-3); }
+
+/* layer diagram */
+.layer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-inline-size: 400px;
+}
+.layer-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  font-size: 0.72rem;
+  transition: border-color .15s;
+}
+.layer-row:hover { border-color: var(--color-accent); }
+.layer-row__name { color: var(--color-accent); flex: 0 0 90px; font-weight: 500; }
+.layer-row__desc { color: var(--color-muted); }
+.layer-row--top  { border-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+
+/* divider */
+.divider { block-size: 1px; background: var(--color-border); margin-block: var(--space-8); }
+
+/* cheat sheet table */
+.cheat-table { inline-size: 100%; border-collapse: collapse; font-size: 0.75rem; }
+.cheat-table th { text-align: start; padding: var(--space-2) var(--space-3); color: var(--color-accent); font-weight: 500; border-block-end: 1px solid var(--color-border); font-size: 0.65rem; text-transform: uppercase; letter-spacing: .1em; }
+.cheat-table td { padding: var(--space-2) var(--space-3); border-block-end: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent); color: var(--color-muted); vertical-align: top; }
+.cheat-table td:first-child { color: var(--color-text); font-family: 'DM Mono', monospace; white-space: nowrap; }
+.cheat-table tr:hover td { background: color-mix(in srgb, var(--color-accent) 4%, transparent); }
+</style>
+</head>
+<body>
+
+<button class="theme-btn" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">
+  Toggle Theme
+</button>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-eyebrow">Layout Framework v2.0</div>
+  <h1 class="hero-title">Macro <em>&amp;</em> Micro<br>Layout System</h1>
+  <p class="hero-sub">Grid + Flex · Container Queries · Subgrid · Custom Property API · @layer Architecture · Logical Properties · RTL</p>
+  <div class="badge-row">
+    <span class="badge">@layer</span>
+    <span class="badge">Container Queries</span>
+    <span class="badge">Subgrid</span>
+    <span class="badge">Custom Property API</span>
+    <span class="badge">Masonry</span>
+    <span class="badge">Holy Grail</span>
+    <span class="badge">Overlay</span>
+    <span class="badge">Logical Properties</span>
+    <span class="badge">RTL</span>
+  </div>
+</div>
+
+<div class="demo-wrap">
+
+
+<!-- ════════════════════════════════════════════════════════
+     @LAYER ARCHITECTURE
+     ════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-tag">01 — @layer</div>
+  <div class="section-title">Layer Architecture</div>
+  <p class="section-desc">The entire framework is wrapped in named <code>@layer</code> blocks. Layer order controls the cascade — styles in later layers always win, no <code>!important</code> needed. Add your overrides to <code>@layer overrides</code>.</p>
+
+  <div class="demo-block">
+    <div class="demo-block-title">Layer cascade (bottom wins)</div>
+    <div class="layer-stack">
+      <div class="layer-row"><span class="layer-row__name">reset</span><span class="layer-row__desc">Box sizing, margin, baseline normalisation</span></div>
+      <div class="layer-row"><span class="layer-row__name">tokens</span><span class="layer-row__desc">Space scale, color, container widths</span></div>
+      <div class="layer-row"><span class="layer-row__name">macro</span><span class="layer-row__desc">Grid, containers, page shells, subgrid</span></div>
+      <div class="layer-row"><span class="layer-row__name">micro</span><span class="layer-row__desc">Flex utilities, container queries</span></div>
+      <div class="layer-row"><span class="layer-row__name">patterns</span><span class="layer-row__desc">Cluster, stack, masonry, overlay, reel…</span></div>
+      <div class="layer-row"><span class="layer-row__name">utilities</span><span class="layer-row__desc">Logical margin/padding, display, RTL</span></div>
+      <div class="layer-row layer-row--top"><span class="layer-row__name">overrides</span><span class="layer-row__desc">← Your styles here. Always win.</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     CUSTOM PROPERTY API
+     ════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-tag">02 — Custom Property API</div>
+  <div class="section-title">Per-Instance Overrides</div>
+  <p class="section-desc">Every major layout primitive exposes CSS custom properties. Override them inline — no new classes needed.</p>
+
+  <div class="api-note">
+    <strong>API tokens on .grid:</strong><br>
+    <code>--grid-cols</code> · <code>--grid-gap</code><br><br>
+    <strong>API tokens on patterns:</strong><br>
+    <code>--sidebar-width</code> · <code>--sidebar-right-width</code> · <code>--switcher-basis</code> · <code>--cluster-gap</code> · <code>--stack-gap</code> · <code>--masonry-cols</code> · <code>--masonry-gap</code> · <code>--reel-item-size</code> · <code>--sidebar-pair-side</code>
+  </div>
+
+  <div class="label">style="--grid-cols:5;--grid-gap:var(--space-2)" — 5 columns, tight gap</div>
+  <div class="grid grid--gap-sm" style="--grid-cols:5;--grid-gap:var(--space-2);margin-block-end:var(--space-5)">
+    <div class="col-1 cell">1</div>
+    <div class="col-1 cell">2</div>
+    <div class="col-1 cell">3</div>
+    <div class="col-1 cell">4</div>
+    <div class="col-1 cell">5</div>
+  </div>
+
+  <div class="label">style="--grid-cols:7" — 7 columns</div>
+  <div class="grid" style="--grid-cols:7;margin-block-end:var(--space-5)">
+    <div class="col-1 cell">1</div>
+    <div class="col-1 cell">2</div>
+    <div class="col-2 cell cell--accent">span 2</div>
+    <div class="col-1 cell">5</div>
+    <div class="col-2 cell">span 2</div>
+  </div>
+
+  <div class="label">style="--cluster-gap:var(--space-6)" — loose cluster</div>
+  <div class="cluster" style="--cluster-gap:var(--space-6);margin-block-end:var(--space-5)">
+    <span class="pill pill--accent">design</span>
+    <span class="pill">systems</span>
+    <span class="pill pill--accent">CSS</span>
+    <span class="pill">custom</span>
+    <span class="pill pill--accent">property</span>
+    <span class="pill">API</span>
+  </div>
+
+  <div class="label">style="--switcher-basis:300px" — switches to column below 300px each</div>
+  <div class="switcher" style="--switcher-basis:300px">
+    <div class="cell cell--tall">A — grows equally</div>
+    <div class="cell cell--tall">B — grows equally</div>
+    <div class="cell cell--tall">C — grows equally</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SUBGRID
+     ════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-tag">03 — Subgrid</div>
+  <div class="section-title">Inherited Column Tracks</div>
+  <p class="section-desc">Children of <code>.grid</code> can opt into <code>.subgrid</code> to inherit the parent's column tracks. Nested elements stay column-aligned without manual math — notice how all card sections align across cards below.</p>
+
+  <div class="api-note">
+    <strong>Classes:</strong> <code>.subgrid</code> (columns) · <code>.subgrid--rows</code> (rows) · <code>.subgrid--both</code>
+  </div>
+
+  <div class="demo-block">
+    <div class="demo-block-title">.grid → .col-4.subgrid-card (grid-template-rows: subgrid, grid-row: span 3) — top/title/body rows align across all cards</div>
+
+    <div class="grid grid--gap-md" style="grid-template-rows: auto auto auto;">
+      <div class="col-4 subgrid-card">
+        <div class="subgrid-card__top">Category · Short</div>
+        <div class="subgrid-card__mid">Brief Heading</div>
+        <div class="subgrid-card__bottom">A shorter description that still aligns perfectly with its siblings across the row thanks to subgrid row inheritance.</div>
+      </div>
+      <div class="col-4 subgrid-card">
+        <div class="subgrid-card__top">Category · Medium Length</div>
+        <div class="subgrid-card__mid">A Somewhat Longer Card Title Here</div>
+        <div class="subgrid-card__bottom">This card has a medium amount of body text. The row tracks are shared, so this bottom section starts at exactly the same vertical position as the others.</div>
+      </div>
+      <div class="col-4 subgrid-card">
+        <div class="subgrid-card__top">Category</div>
+        <div class="subgrid-card__mid">Compact Title</div>
+        <div class="subgrid-card__bottom">The subgrid ensures every card's internal sections align — eyebrow, title, and body — regardless of content length. No fixed heights, no JavaScript.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     CONTAINER QUERIES
+     ════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-tag">04 — Container Queries</div>
+  <div class="section-title">Component-Responsive Layout</div>
+  <p class="section-desc">Add <code>.cq</code> to any parent to make it a container. Children can then use <code>@container</code>-aware classes that respond to <em>the component's width</em>, not the screen. The same card component adapts in a narrow column, a medium panel, or a full-width slot.</p>
+
+  <div class="api-note">
+    <strong>Activate:</strong> <code>.cq</code> on any parent →
+    <strong>Use:</strong> <code>.cq-flex--col@sm</code> · <code>.cq-flex--col@md</code> · <code>.cq-hide@sm</code> · <code>.cq-card</code> pattern
+  </div>
+
+  <div class="cq-demo-grid">
+    <!-- Narrow container -->
+    <div>
+      <div class="demo-block-title text-center" style="margin-block-end:var(--space-3)">Narrow container (~33%)</div>
+      <div class="cq-demo-panel">
+        <div class="cq">
+          <div class="cq-card">
+            <div class="cq-card__media"></div>
+            <div>
+              <div class="cq-card__title">Stacked</div>
+              <div class="cq-card__body">Container is narrow → column layout auto-applied.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medium: spans 2 cols -->
+    <div style="grid-column: span 2;">
+      <div class="demo-block-title text-center" style="margin-block-end:var(--space-3)">Wide container (~66%)</div>
+      <div class="cq-demo-panel">
+        <div class="cq">
+          <div class="cq-card">
+            <div class="cq-card__media" style="block-size:100px"></div>
+            <div>
+              <div class="cq-card__title">Row Layout</div>
+              <div class="cq-card__body">Container exceeds 480px → row layout kicks in automatically. Same HTML, same classes. Only the container width changed.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     MISSING PATTERNS
+     ════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-tag">05 — New Patterns</div>
+  <div class="section-title">Masonry · Holy Grail · Overlay</div>
+
+  <!-- Masonry -->
+  <div class="demo-block">
+    <div class="demo-block-title">.masonry (CSS columns + native grid masonry where supported) — Custom Property API: --masonry-cols, --masonry-gap</div>
+
+    <div class="masonry" style="--masonry-cols:3;--masonry-gap:var(--space-4)">
+      <div class="masonry-item"><div class="masonry-item__bar" style="--bar-h:50px"></div><p>Short item — one line</p></div>
+      <div class="masonry-item"><div class="masonry-item__bar" style="--bar-h:120px"></div><p>Tall item with more content. The masonry layout lets each column be independently tall without affecting siblings.</p></div>
+      <div class="masonry-item"><div class="masonry-item__bar" style="--bar-h:70px"></div><p>Medium item with a bit more text here.</p></div>
+      <div class="masonry-item"><div class="masonry-item__bar" style="--bar-h:90px"></div><p>Another tall item that forces the column taller.</p></div>
+      <div class="masonry-item"><div class="masonry-item__bar" style="--bar-h:40px"></div><p>Tiny item</p></div>
+      <div class="masonry-item"><div class="masonry-item__bar" style="--bar-h:100px"></div><p>Medium-tall with paragraph content filling up the space nicely.</p></div>
+    </div>
+  </div>
+
+  <!-- Holy Grail -->
+  <div class="demo-block">
+    <div class="demo-block-title">.page-shell--holy-grail — header / (nav + main + aside) / footer — Custom Property API: --sidebar-width, --sidebar-right-width</div>
+
+    <div class="page-shell page-shell--holy-grail holy-grail-demo" style="--sidebar-width:140px;--sidebar-right-width:140px;gap:0">
+      <div class="region-header hg-region hg-region--accent" style="padding:var(--space-3)">header</div>
+      <div class="region-nav hg-region" style="border-inline-end:1px solid var(--color-border)">nav</div>
+      <div class="region-main hg-region hg-region--accent">main</div>
+      <div class="region-aside hg-region" style="border-inline-start:1px solid var(--color-border)">aside</div>
+      <div class="region-footer hg-region hg-region--accent" style="padding:var(--space-3)">footer</div>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="demo-block">
+    <div class="demo-block-title">.overlay — grid-area:1/1 stacking, no position:absolute. Children declared as overlay__top-start, overlay__bottom-end, overlay__center etc.</div>
+
+    <div class="grid" style="--grid-cols:2;--grid-gap:var(--space-4)">
+      <div class="overlay">
+        <div class="overlay__base overlay-demo-img"></div>
+        <div class="overlay__top-start overlay-badge">New</div>
+        <div class="overlay__bottom-end" style="margin:var(--space-3);background:color-mix(in srgb,black 60%,transparent);padding:var(--space-2) var(--space-3);border-radius:6px;font-size:0.7rem;color:#fff">bottom-end</div>
+      </div>
+      <div class="overlay">
+        <div class="overlay__base overlay-demo-img"></div>
+        <div class="overlay__stretch overlay-caption center-xy" style="background:color-mix(in srgb,black 55%,transparent);border-radius:10px">
+          <span style="text-align:center">overlay__stretch<br><span style="opacity:.6;font-size:.7rem">full cover, centered text</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     LOGICAL PROPERTIES + RTL
+     ════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-tag">06 — Logical Properties + RTL</div>
+  <div class="section-title">Writing-Mode Agnostic Layout</div>
+  <p class="section-desc">Every spacing and sizing utility uses logical properties (<code>margin-inline</code>, <code>padding-block</code>, <code>inline-size</code>, <code>block-size</code>…). Flip <code>dir="rtl"</code> on any element and the layout mirrors automatically — no extra classes needed.</p>
+
+  <div class="api-note">
+    <strong>Logical margin:</strong> <code>.mb-{n}</code> · <code>.mbs-{n}</code> · <code>.mbe-{n}</code> · <code>.mi-{n}</code> · <code>.mis-auto</code> · <code>.mie-auto</code><br>
+    <strong>Logical padding:</strong> <code>.pb-{n}</code> · <code>.pi-{n}</code><br>
+    <strong>Sizing:</strong> <code>.w-min</code> · <code>.w-max</code> · <code>.w-fit</code> · <code>.w-full</code> · <code>.h-screen</code><br>
+    <strong>Border:</strong> <code>.border-inline-start</code> · <code>.border-block-end</code> (auto-flips in RTL)
+  </div>
+
+  <div class="rtl-demo">
+    <!-- LTR -->
+    <div class="rtl-panel" dir="ltr">
+      <div class="rtl-panel__label">dir="ltr" (Left-to-Right)</div>
+      <div class="stack stack--sm">
+        <div class="spread card" style="padding:var(--space-3) var(--space-4)">
+          <span>Profile</span>
+          <span class="pill pill--accent">Edit</span>
+        </div>
+        <div class="card border-inline-start" style="padding:var(--space-3) var(--space-4);border-inline-start-color:var(--color-accent);border-inline-start-width:3px">
+          border-inline-start → left border in LTR
+        </div>
+        <div class="flex gap-3 items-center">
+          <div class="cell" style="inline-size:60px;block-size:40px">icon</div>
+          <span style="font-size:.75rem;color:var(--color-muted)">mis-auto pushes →</span>
+          <span class="pill mis-auto">end</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RTL -->
+    <div class="rtl-panel" dir="rtl">
+      <div class="rtl-panel__label" style="text-align:start">dir="rtl" (Right-to-Left)</div>
+      <div class="stack stack--sm">
+        <div class="spread card" style="padding:var(--space-3) var(--space-4)">
+          <span>الملف الشخصي</span>
+          <span class="pill pill--accent">تعديل</span>
+        </div>
+        <div class="card border-inline-start" style="padding:var(--space-3) var(--space-4);border-inline-start-color:var(--color-accent);border-inline-start-width:3px">
+          border-inline-start → right border in RTL ✓
+        </div>
+        <div class="flex gap-3 items-center">
+          <div class="cell" style="inline-size:60px;block-size:40px">أيقونة</div>
+          <span style="font-size:.75rem;color:var(--color-muted)">mis-auto يدفع →</span>
+          <span class="pill mis-auto">نهاية</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     EXISTING PATTERNS (v1 retained)
+     ════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-tag">07 — Micro Patterns</div>
+  <div class="section-title">Cluster · Stack · Spread · Reel · Sidebar Pair</div>
+
+  <div class="grid" style="--grid-cols:2;--grid-gap:var(--space-4)">
+    <div class="demo-block">
+      <div class="demo-block-title">.cluster — wrapping inline group</div>
+      <div class="cluster" style="--cluster-gap:var(--space-2)">
+        <span class="pill pill--accent">framework</span>
+        <span class="pill">grid</span>
+        <span class="pill pill--accent">flex</span>
+        <span class="pill">container queries</span>
+        <span class="pill">subgrid</span>
+        <span class="pill pill--accent">RTL</span>
+        <span class="pill">@layer</span>
+        <span class="pill">CSS</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-block-title">.spread — push to edges</div>
+      <div class="spread" style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;padding:var(--space-3) var(--space-4)">
+        <div class="stack" style="--stack-gap:2px">
+          <span style="font-size:.8rem;font-family:'Unbounded',sans-serif;font-weight:700">Dashboard</span>
+          <span style="font-size:.68rem;color:var(--color-muted)">12 items</span>
+        </div>
+        <div class="cluster" style="--cluster-gap:var(--space-2)">
+          <span class="pill">Filter</span>
+          <span class="pill pill--accent">+ New</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block" style="grid-column:span 2">
+      <div class="demo-block-title">.reel — horizontal scroll snap (Custom Property API: --reel-item-size)</div>
+      <div class="reel" style="--reel-item-size:180px">
+        <div class="reel-item">01</div>
+        <div class="reel-item">02</div>
+        <div class="reel-item">03</div>
+        <div class="reel-item">04</div>
+        <div class="reel-item">05</div>
+        <div class="reel-item">06</div>
+        <div class="reel-item">07</div>
+        <div class="reel-item">08</div>
+      </div>
+    </div>
+
+    <div class="demo-block" style="grid-column:span 2">
+      <div class="demo-block-title">.sidebar-pair — fixed + fluid (Custom Property API: --sidebar-pair-side)</div>
+      <div class="sidebar-pair" style="--sidebar-pair-side:180px">
+        <div class="sidebar-pair__side cell cell--tall">side<br>180px fixed</div>
+        <div class="sidebar-pair__main cell cell--tall cell--accent">main<br>flex: 1 1 0%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     CHEAT SHEET
+     ════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-tag">08 — Reference</div>
+  <div class="section-title">Full Cheat Sheet</div>
+
+  <div class="grid" style="--grid-cols:2;--grid-gap:var(--space-5)">
+    <div class="card">
+      <div class="card__eyebrow">Macro · Grid</div>
+      <table class="cheat-table">
+        <tr><th>Class</th><th>Purpose</th></tr>
+        <tr><td>.container--{sm…2xl}</td><td>Max-width containers (logical)</td></tr>
+        <tr><td>.grid</td><td>12-col grid (--grid-cols, --grid-gap)</td></tr>
+        <tr><td>.col-{1–12}</td><td>Static spans</td></tr>
+        <tr><td>.col-{sm|md|lg|xl|2xl}-{1–12}</td><td>Responsive spans</td></tr>
+        <tr><td>.col-offset-{1–11}</td><td>Start offsets</td></tr>
+        <tr><td>.row-span-{1–4}</td><td>Row spans</td></tr>
+        <tr><td>.subgrid</td><td>Inherit parent column tracks</td></tr>
+        <tr><td>.subgrid--rows</td><td>Inherit parent row tracks</td></tr>
+        <tr><td>.grid--auto-{sm|md|lg|xl}</td><td>Auto-fill with minmax</td></tr>
+        <tr><td>.page-shell</td><td>Full-page grid shell</td></tr>
+        <tr><td>.page-shell--sidebar</td><td>Header/sidebar+main/footer</td></tr>
+        <tr><td>.page-shell--sidebar-right</td><td>Header/main+aside/footer</td></tr>
+        <tr><td>.page-shell--holy-grail</td><td>Header/nav+main+aside/footer</td></tr>
+        <tr><td>.region-{header|nav|main|aside|footer}</td><td>Named grid areas</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card__eyebrow">Micro · Flex + Patterns</div>
+      <table class="cheat-table">
+        <tr><th>Class</th><th>Purpose</th></tr>
+        <tr><td>.cq / .cq--size</td><td>Register container for @container</td></tr>
+        <tr><td>.cq-flex--col@sm/md</td><td>Container-responsive direction</td></tr>
+        <tr><td>.cq-card</td><td>Stack→row card via container query</td></tr>
+        <tr><td>.flex--{row|col|wrap|nowrap}</td><td>Flex modifiers</td></tr>
+        <tr><td>.justify-{start|center|between…}</td><td>Justify content</td></tr>
+        <tr><td>.items-{start|center|end…}</td><td>Align items</td></tr>
+        <tr><td>.place-center</td><td>Center on both axes (shorthand)</td></tr>
+        <tr><td>.gap-{0–8} / .gap-{x|y}-{n}</td><td>Gap scale</td></tr>
+        <tr><td>.basis-{25|33|50|66|75|100}</td><td>Flex basis scale</td></tr>
+        <tr><td>.cluster</td><td>Wrapping tag/pill group (--cluster-gap)</td></tr>
+        <tr><td>.stack / .stack--{xs|sm|lg|xl}</td><td>Vertical rhythm (--stack-gap)</td></tr>
+        <tr><td>.spread</td><td>Space-between row</td></tr>
+        <tr><td>.switcher</td><td>Row→col auto (--switcher-basis)</td></tr>
+        <tr><td>.sidebar-pair</td><td>Fixed+fluid pair (--sidebar-pair-side)</td></tr>
+        <tr><td>.reel</td><td>Horizontal scroll snap (--reel-item-size)</td></tr>
+        <tr><td>.masonry</td><td>Masonry columns (--masonry-cols)</td></tr>
+        <tr><td>.overlay / .overlay__*</td><td>Grid-stacked layers</td></tr>
+        <tr><td>.mb-{n} / .mbs-{n} / .mi-{n}</td><td>Logical margin (RTL-safe)</td></tr>
+        <tr><td>.pb-{n} / .pi-{n}</td><td>Logical padding (RTL-safe)</td></tr>
+        <tr><td>.border-inline-start</td><td>Logical border (flips in RTL)</td></tr>
+        <tr><td>.w-{min|max|fit|full}</td><td>Intrinsic sizing</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- /demo-wrap -->
+</body>
+</html>

@@ -1,0 +1,857 @@
+/* ================================================================
+   LAYOUT FRAMEWORK v2.0
+   ----------------------------------------------------------------
+   MACRO  →  Grid-based, screen-responsive page layouts
+   MICRO  →  Flex-based, container-responsive component layouts
+   ----------------------------------------------------------------
+   Enhancements:
+   · @layer architecture       (specificity control)
+   · CSS Custom Property API   (per-instance overrides)
+   · Container Queries         (true component responsiveness)
+   · Subgrid                   (aligned nested grids)
+   · Missing Patterns          (masonry, holy grail, overlay)
+   · Logical Properties + RTL  (writing-mode agnostic)
+   ================================================================ */
+
+
+/* ================================================================
+   @LAYER STACK
+   Order defines cascade priority (last = highest)
+   ================================================================ */
+@layer reset, tokens, macro, micro, patterns, utilities, overrides;
+
+
+/* ================================================================
+   LAYER: reset
+   ================================================================ */
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+  }
+
+  img, video, svg, canvas {
+    display: block;
+    max-inline-size: 100%;
+  }
+
+  input, button, textarea, select {
+    font: inherit;
+  }
+}
+
+
+/* ================================================================
+   LAYER: tokens
+   ================================================================ */
+@layer tokens {
+
+  :root {
+    /* ── Space scale ─────────────────────────────────────── */
+    --space-1:  0.25rem;
+    --space-2:  0.5rem;
+    --space-3:  0.75rem;
+    --space-4:  1rem;
+    --space-5:  1.5rem;
+    --space-6:  2rem;
+    --space-7:  3rem;
+    --space-8:  4rem;
+    --space-9:  6rem;
+
+    /* ── Container widths ────────────────────────────────── */
+    --container-sm:  540px;
+    --container-md:  720px;
+    --container-lg:  960px;
+    --container-xl:  1200px;
+    --container-2xl: 1440px;
+
+    /* ── Grid defaults (overridable per instance) ────────── */
+    --grid-cols: 12;
+    --grid-gap:  var(--space-5);
+
+    /* ── Sidebar defaults ────────────────────────────────── */
+    --sidebar-width:       240px;
+    --sidebar-right-width: 280px;
+
+    /* ── Switcher basis ──────────────────────────────────── */
+    --switcher-basis: 240px;
+
+    /* ── Masonry columns ─────────────────────────────────── */
+    --masonry-cols: 3;
+    --masonry-gap:  var(--space-5);
+
+    /* ── Color tokens (light) ────────────────────────────── */
+    --color-bg:      #ffffff;
+    --color-surface: #f5f5f5;
+    --color-border:  #e0e0e0;
+    --color-text:    #111111;
+    --color-muted:   #777777;
+    --color-accent:  #0055ff;
+
+    /* ── Breakpoints (reference only) ────────────────────── */
+    /* --bp-sm:  480px  */
+    /* --bp-md:  768px  */
+    /* --bp-lg:  1024px */
+    /* --bp-xl:  1280px */
+    /* --bp-2xl: 1536px */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg:      #0a0a0a;
+      --color-surface: #141414;
+      --color-border:  #242424;
+      --color-text:    #e8e4dc;
+      --color-muted:   #666666;
+      --color-accent:  #b8f564;
+    }
+  }
+
+  /* Manual dark/light overrides */
+  [data-theme="dark"] {
+    --color-bg:      #0a0a0a;
+    --color-surface: #141414;
+    --color-border:  #242424;
+    --color-text:    #e8e4dc;
+    --color-muted:   #666666;
+    --color-accent:  #b8f564;
+  }
+
+  [data-theme="light"] {
+    --color-bg:      #ffffff;
+    --color-surface: #f5f5f5;
+    --color-border:  #e0e0e0;
+    --color-text:    #111111;
+    --color-muted:   #777777;
+    --color-accent:  #0055ff;
+  }
+}
+
+
+/* ================================================================
+   LAYER: macro  —  Grid, screen-responsive
+   ================================================================ */
+@layer macro {
+
+  /* ── Container ─────────────────────────────────────────── */
+  .container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--space-5);
+  }
+
+  .container--sm    { max-inline-size: var(--container-sm);  }
+  .container--md    { max-inline-size: var(--container-md);  }
+  .container--lg    { max-inline-size: var(--container-lg);  }
+  .container--xl    { max-inline-size: var(--container-xl);  }
+  .container--2xl   { max-inline-size: var(--container-2xl); }
+  .container--fluid { max-inline-size: 100%; }
+
+  /* ── Base Grid ─────────────────────────────────────────── */
+  /*  Custom Property API:
+      --grid-cols  (default 12)
+      --grid-gap   (default --space-5)
+      Override inline: <div class="grid" style="--grid-cols:5;--grid-gap:1rem"> */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols, 12), 1fr);
+    gap: var(--grid-gap, var(--space-5));
+  }
+
+  /* Gap modifiers */
+  .grid--gap-none { --grid-gap: 0; }
+  .grid--gap-sm   { --grid-gap: var(--space-3); }
+  .grid--gap-md   { --grid-gap: var(--space-5); }
+  .grid--gap-lg   { --grid-gap: var(--space-7); }
+
+  /* ── Column Spans ──────────────────────────────────────── */
+  [class*="col-"] { grid-column: span 12; }
+
+  .col-1  { grid-column: span 1; }
+  .col-2  { grid-column: span 2; }
+  .col-3  { grid-column: span 3; }
+  .col-4  { grid-column: span 4; }
+  .col-5  { grid-column: span 5; }
+  .col-6  { grid-column: span 6; }
+  .col-7  { grid-column: span 7; }
+  .col-8  { grid-column: span 8; }
+  .col-9  { grid-column: span 9; }
+  .col-10 { grid-column: span 10; }
+  .col-11 { grid-column: span 11; }
+  .col-12 { grid-column: span 12; }
+
+  /* Column offsets (logical) */
+  .col-offset-1  { grid-column-start: 2;  }
+  .col-offset-2  { grid-column-start: 3;  }
+  .col-offset-3  { grid-column-start: 4;  }
+  .col-offset-4  { grid-column-start: 5;  }
+  .col-offset-5  { grid-column-start: 6;  }
+  .col-offset-6  { grid-column-start: 7;  }
+  .col-offset-7  { grid-column-start: 8;  }
+  .col-offset-8  { grid-column-start: 9;  }
+  .col-offset-9  { grid-column-start: 10; }
+  .col-offset-10 { grid-column-start: 11; }
+  .col-offset-11 { grid-column-start: 12; }
+
+  /* Row spans */
+  .row-span-1 { grid-row: span 1; }
+  .row-span-2 { grid-row: span 2; }
+  .row-span-3 { grid-row: span 3; }
+  .row-span-4 { grid-row: span 4; }
+
+  /* ── Responsive Column Spans ───────────────────────────── */
+  @media (min-width: 480px) {
+    .col-sm-1  { grid-column: span 1;  }
+    .col-sm-2  { grid-column: span 2;  }
+    .col-sm-3  { grid-column: span 3;  }
+    .col-sm-4  { grid-column: span 4;  }
+    .col-sm-5  { grid-column: span 5;  }
+    .col-sm-6  { grid-column: span 6;  }
+    .col-sm-7  { grid-column: span 7;  }
+    .col-sm-8  { grid-column: span 8;  }
+    .col-sm-9  { grid-column: span 9;  }
+    .col-sm-10 { grid-column: span 10; }
+    .col-sm-11 { grid-column: span 11; }
+    .col-sm-12 { grid-column: span 12; }
+  }
+
+  @media (min-width: 768px) {
+    .col-md-1  { grid-column: span 1;  }
+    .col-md-2  { grid-column: span 2;  }
+    .col-md-3  { grid-column: span 3;  }
+    .col-md-4  { grid-column: span 4;  }
+    .col-md-5  { grid-column: span 5;  }
+    .col-md-6  { grid-column: span 6;  }
+    .col-md-7  { grid-column: span 7;  }
+    .col-md-8  { grid-column: span 8;  }
+    .col-md-9  { grid-column: span 9;  }
+    .col-md-10 { grid-column: span 10; }
+    .col-md-11 { grid-column: span 11; }
+    .col-md-12 { grid-column: span 12; }
+  }
+
+  @media (min-width: 1024px) {
+    .col-lg-1  { grid-column: span 1;  }
+    .col-lg-2  { grid-column: span 2;  }
+    .col-lg-3  { grid-column: span 3;  }
+    .col-lg-4  { grid-column: span 4;  }
+    .col-lg-5  { grid-column: span 5;  }
+    .col-lg-6  { grid-column: span 6;  }
+    .col-lg-7  { grid-column: span 7;  }
+    .col-lg-8  { grid-column: span 8;  }
+    .col-lg-9  { grid-column: span 9;  }
+    .col-lg-10 { grid-column: span 10; }
+    .col-lg-11 { grid-column: span 11; }
+    .col-lg-12 { grid-column: span 12; }
+  }
+
+  @media (min-width: 1280px) {
+    .col-xl-1  { grid-column: span 1;  }
+    .col-xl-2  { grid-column: span 2;  }
+    .col-xl-3  { grid-column: span 3;  }
+    .col-xl-4  { grid-column: span 4;  }
+    .col-xl-5  { grid-column: span 5;  }
+    .col-xl-6  { grid-column: span 6;  }
+    .col-xl-7  { grid-column: span 7;  }
+    .col-xl-8  { grid-column: span 8;  }
+    .col-xl-9  { grid-column: span 9;  }
+    .col-xl-10 { grid-column: span 10; }
+    .col-xl-11 { grid-column: span 11; }
+    .col-xl-12 { grid-column: span 12; }
+  }
+
+  @media (min-width: 1536px) {
+    .col-2xl-1  { grid-column: span 1;  }
+    .col-2xl-2  { grid-column: span 2;  }
+    .col-2xl-3  { grid-column: span 3;  }
+    .col-2xl-4  { grid-column: span 4;  }
+    .col-2xl-5  { grid-column: span 5;  }
+    .col-2xl-6  { grid-column: span 6;  }
+    .col-2xl-7  { grid-column: span 7;  }
+    .col-2xl-8  { grid-column: span 8;  }
+    .col-2xl-9  { grid-column: span 9;  }
+    .col-2xl-10 { grid-column: span 10; }
+    .col-2xl-11 { grid-column: span 11; }
+    .col-2xl-12 { grid-column: span 12; }
+  }
+
+  /* ── Auto Grids ────────────────────────────────────────── */
+  .grid--auto-sm  { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .grid--auto-md  { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .grid--auto-lg  { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .grid--auto-xl  { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); }
+
+  /* ── SUBGRID ───────────────────────────────────────────── */
+  /*  Children of .grid can opt into inheriting the parent
+      tracks. Ensures nested items stay column-aligned.
+      Usage: <div class="grid"><div class="col-12 subgrid">...</div></div> */
+  .subgrid {
+    display: grid;
+    grid-template-columns: subgrid;
+    gap: var(--grid-gap, var(--space-5));
+  }
+
+  .subgrid--rows {
+    display: grid;
+    grid-template-rows: subgrid;
+  }
+
+  .subgrid--both {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: subgrid;
+  }
+
+  /* ── Page Shells ───────────────────────────────────────── */
+  /*  Custom Property API:
+      --sidebar-width        (default 240px)
+      --sidebar-right-width  (default 280px) */
+
+  .page-shell {
+    display: grid;
+    min-block-size: 100dvh;
+    grid-template-areas:
+      "header"
+      "main"
+      "footer";
+    grid-template-rows: auto 1fr auto;
+  }
+
+  /* Two-col sidebar left */
+  .page-shell--sidebar {
+    grid-template-areas:
+      "header  header"
+      "sidebar main"
+      "footer  footer";
+    grid-template-columns: var(--sidebar-width, 240px) 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  @media (max-width: 767px) {
+    .page-shell--sidebar {
+      grid-template-areas:
+        "header"
+        "main"
+        "footer";
+      grid-template-columns: 1fr;
+    }
+    .page-shell--sidebar .region-sidebar { display: none; }
+  }
+
+  /* Two-col sidebar right */
+  .page-shell--sidebar-right {
+    grid-template-areas:
+      "header  header"
+      "main    aside"
+      "footer  footer";
+    grid-template-columns: 1fr var(--sidebar-right-width, 280px);
+    grid-template-rows: auto 1fr auto;
+  }
+
+  @media (max-width: 1023px) {
+    .page-shell--sidebar-right {
+      grid-template-areas:
+        "header"
+        "main"
+        "footer";
+      grid-template-columns: 1fr;
+    }
+    .page-shell--sidebar-right .region-aside { display: none; }
+  }
+
+  /* Holy grail: header / nav+main+aside / footer */
+  .page-shell--holy-grail {
+    grid-template-areas:
+      "header header  header"
+      "nav    main    aside"
+      "footer footer  footer";
+    grid-template-columns: var(--sidebar-width, 200px) 1fr var(--sidebar-right-width, 200px);
+    grid-template-rows: auto 1fr auto;
+  }
+
+  @media (max-width: 1023px) {
+    .page-shell--holy-grail {
+      grid-template-areas:
+        "header"
+        "nav"
+        "main"
+        "aside"
+        "footer";
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Named regions */
+  .region-header  { grid-area: header;  }
+  .region-nav     { grid-area: nav;     }
+  .region-sidebar { grid-area: sidebar; }
+  .region-main    { grid-area: main;    }
+  .region-aside   { grid-area: aside;   }
+  .region-footer  { grid-area: footer;  }
+
+  /* ── Intrinsic Sizing ──────────────────────────────────── */
+  .w-min     { inline-size: min-content; }
+  .w-max     { inline-size: max-content; }
+  .w-fit     { inline-size: fit-content; }
+  .w-full    { inline-size: 100%; }
+  .h-full    { block-size: 100%; }
+  .h-screen  { block-size: 100dvh; }
+}
+
+
+/* ================================================================
+   LAYER: micro  —  Flex, container-responsive
+   ================================================================ */
+@layer micro {
+
+  /* ── Container Query Registration ──────────────────────── */
+  /*  Any element with .cq becomes a container.
+      Children can use @container queries to adapt.
+      Custom Property API: --cq-type (default inline-size) */
+  .cq        { container-type: inline-size; }
+  .cq--size  { container-type: size; }
+  .cq--named { container-type: inline-size; container-name: var(--cq-name, component); }
+
+  /* ── Flex Container ────────────────────────────────────── */
+  .flex         { display: flex; }
+  .flex--inline { display: inline-flex; }
+
+  /* Direction */
+  .flex--row      { flex-direction: row; }
+  .flex--row-rev  { flex-direction: row-reverse; }
+  .flex--col      { flex-direction: column; }
+  .flex--col-rev  { flex-direction: column-reverse; }
+
+  /* Wrap */
+  .flex--wrap   { flex-wrap: wrap; }
+  .flex--nowrap { flex-wrap: nowrap; }
+
+  /* ── Gap ───────────────────────────────────────────────── */
+  .gap-0 { gap: 0; }
+  .gap-1 { gap: var(--space-1); }
+  .gap-2 { gap: var(--space-2); }
+  .gap-3 { gap: var(--space-3); }
+  .gap-4 { gap: var(--space-4); }
+  .gap-5 { gap: var(--space-5); }
+  .gap-6 { gap: var(--space-6); }
+  .gap-7 { gap: var(--space-7); }
+  .gap-8 { gap: var(--space-8); }
+
+  .gap-x-1 { column-gap: var(--space-1); }
+  .gap-x-2 { column-gap: var(--space-2); }
+  .gap-x-3 { column-gap: var(--space-3); }
+  .gap-x-4 { column-gap: var(--space-4); }
+  .gap-x-5 { column-gap: var(--space-5); }
+  .gap-x-6 { column-gap: var(--space-6); }
+
+  .gap-y-1 { row-gap: var(--space-1); }
+  .gap-y-2 { row-gap: var(--space-2); }
+  .gap-y-3 { row-gap: var(--space-3); }
+  .gap-y-4 { row-gap: var(--space-4); }
+  .gap-y-5 { row-gap: var(--space-5); }
+  .gap-y-6 { row-gap: var(--space-6); }
+
+  /* ── Justify Content ───────────────────────────────────── */
+  .justify-start   { justify-content: flex-start;    }
+  .justify-end     { justify-content: flex-end;      }
+  .justify-center  { justify-content: center;        }
+  .justify-between { justify-content: space-between; }
+  .justify-around  { justify-content: space-around;  }
+  .justify-evenly  { justify-content: space-evenly;  }
+  .justify-stretch { justify-content: stretch;       }
+
+  /* ── Align Items ───────────────────────────────────────── */
+  .items-start    { align-items: flex-start; }
+  .items-end      { align-items: flex-end;   }
+  .items-center   { align-items: center;     }
+  .items-baseline { align-items: baseline;   }
+  .items-stretch  { align-items: stretch;    }
+
+  /* ── Align Content ─────────────────────────────────────── */
+  .content-start   { align-content: flex-start;    }
+  .content-end     { align-content: flex-end;      }
+  .content-center  { align-content: center;        }
+  .content-between { align-content: space-between; }
+  .content-around  { align-content: space-around;  }
+  .content-stretch { align-content: stretch;       }
+
+  /* ── Place (shorthand) ─────────────────────────────────── */
+  .place-center { place-content: center; place-items: center; }
+  .place-start  { place-content: start;  place-items: start;  }
+  .place-end    { place-content: end;    place-items: end;    }
+
+  /* ── Flex Children ─────────────────────────────────────── */
+  .flex--grow   { flex: 1 1 0%; }
+  .flex--shrink { flex: 0 1 auto; }
+  .flex--fixed  { flex: 0 0 auto; }
+  .flex--auto   { flex: 1 1 auto; }
+
+  .grow-0 { flex-grow: 0; }
+  .grow-1 { flex-grow: 1; }
+  .grow-2 { flex-grow: 2; }
+  .grow-3 { flex-grow: 3; }
+
+  /* Flex basis scale */
+  .basis-25  { flex-basis: 25%; }
+  .basis-33  { flex-basis: 33.333%; }
+  .basis-50  { flex-basis: 50%; }
+  .basis-66  { flex-basis: 66.666%; }
+  .basis-75  { flex-basis: 75%; }
+  .basis-100 { flex-basis: 100%; }
+
+  /* ── Self Alignment ────────────────────────────────────── */
+  .self-start    { align-self: flex-start; }
+  .self-end      { align-self: flex-end;   }
+  .self-center   { align-self: center;     }
+  .self-stretch  { align-self: stretch;    }
+  .self-baseline { align-self: baseline;   }
+
+  /* ── Order ─────────────────────────────────────────────── */
+  .order-first { order: -9999; }
+  .order-last  { order:  9999; }
+  .order-0 { order: 0; }
+  .order-1 { order: 1; }
+  .order-2 { order: 2; }
+  .order-3 { order: 3; }
+  .order-4 { order: 4; }
+
+  /* ── Responsive Flex via Container Queries ─────────────── */
+  /*  Requires parent .cq
+      <div class="cq"><div class="flex cq-flex--col@sm">...</div></div> */
+  @container (max-width: 480px) {
+    .cq-flex--col\@sm  { flex-direction: column; }
+    .cq-flex--row\@sm  { flex-direction: row; }
+    .cq-hide\@sm       { display: none; }
+    .cq-show\@sm       { display: flex; }
+  }
+
+  @container (max-width: 768px) {
+    .cq-flex--col\@md  { flex-direction: column; }
+    .cq-flex--row\@md  { flex-direction: row; }
+    .cq-hide\@md       { display: none; }
+    .cq-show\@md       { display: flex; }
+  }
+
+  @container (min-width: 769px) {
+    .cq-flex--col\@lg  { flex-direction: column; }
+    .cq-flex--row\@lg  { flex-direction: row; }
+    .cq-hide\@lg       { display: none; }
+    .cq-show\@lg       { display: flex; }
+  }
+}
+
+
+/* ================================================================
+   LAYER: patterns  —  Named composition patterns
+   ================================================================ */
+@layer patterns {
+
+  /* ── Cluster ───────────────────────────────────────────── */
+  /*  Wrapping group of inline items (tags, pills, chips).
+      Custom Property API: --cluster-gap                     */
+  .cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cluster-gap, var(--space-3));
+    align-items: center;
+  }
+
+  /* ── Stack ─────────────────────────────────────────────── */
+  /*  Vertical rhythm via lobotomised owl.
+      Custom Property API: --stack-gap                       */
+  .stack {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stack > * + * { margin-block-start: var(--stack-gap, var(--space-4)); }
+  .stack--xs > * + * { --stack-gap: var(--space-1); }
+  .stack--sm > * + * { --stack-gap: var(--space-2); }
+  .stack--lg > * + * { --stack-gap: var(--space-6); }
+  .stack--xl > * + * { --stack-gap: var(--space-8); }
+
+  /* ── Sidebar Pair ──────────────────────────────────────── */
+  /*  Fixed side + fluid main, wraps on tight containers.
+      Custom Property API: --sidebar-pair-side               */
+  .sidebar-pair {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+  }
+
+  .sidebar-pair__side { flex: 0 0 var(--sidebar-pair-side, 220px); }
+  .sidebar-pair__main { flex: 1 1 0%; min-inline-size: 0; }
+
+  /* ── Switcher ──────────────────────────────────────────── */
+  /*  Row until items would be narrower than --switcher-basis,
+      then stacks to column automatically.
+      Custom Property API: --switcher-basis                  */
+  .switcher {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .switcher > * { flex: 1 1 var(--switcher-basis, 240px); }
+
+  /* ── Center XY ─────────────────────────────────────────── */
+  .center-xy {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* ── Spread ────────────────────────────────────────────── */
+  .spread {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* ── Reel ──────────────────────────────────────────────── */
+  /*  Horizontal scroll strip with snap.
+      Custom Property API: --reel-item-size                  */
+  .reel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-4);
+    padding-block-end: var(--space-2);
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  .reel > * {
+    flex: 0 0 var(--reel-item-size, auto);
+    scroll-snap-align: start;
+  }
+
+  /* ── MASONRY ───────────────────────────────────────────── */
+  /*  CSS columns-based masonry (progressive: uses grid
+      masonry where supported).
+      Custom Property API: --masonry-cols, --masonry-gap     */
+  .masonry {
+    columns: var(--masonry-cols, 3);
+    column-gap: var(--masonry-gap, var(--space-5));
+  }
+
+  .masonry > * {
+    break-inside: avoid;
+    margin-block-end: var(--masonry-gap, var(--space-5));
+  }
+
+  /* Responsive masonry presets */
+  .masonry--sm { --masonry-cols: 2; }
+  .masonry--md { --masonry-cols: 3; }
+  .masonry--lg { --masonry-cols: 4; }
+
+  @media (max-width: 767px)  { .masonry { --masonry-cols: 1; } }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .masonry { --masonry-cols: 2; }
+  }
+
+  /* Native grid masonry where supported */
+  @supports (grid-template-rows: masonry) {
+    .masonry {
+      display: grid;
+      grid-template-columns: repeat(var(--masonry-cols, 3), 1fr);
+      grid-template-rows: masonry;
+      gap: var(--masonry-gap, var(--space-5));
+      columns: unset;
+      column-gap: unset;
+    }
+
+    .masonry > * {
+      break-inside: unset;
+      margin-block-end: 0;
+    }
+  }
+
+  /* ── OVERLAY ───────────────────────────────────────────── */
+  /*  Stack multiple children on the same grid cell.
+      All children occupy the same space — no position:absolute.
+      Usage:
+        <div class="overlay">
+          <img class="overlay__base" …>
+          <div class="overlay__content">…</div>
+        </div>                                                */
+  .overlay {
+    display: grid;
+  }
+
+  .overlay > * {
+    grid-area: 1 / 1;
+  }
+
+  /* Alignment helpers for overlay children */
+  .overlay__base    { block-size: 100%; inline-size: 100%; object-fit: cover; }
+  .overlay__top-start    { align-self: start;  justify-self: start;  }
+  .overlay__top-end      { align-self: start;  justify-self: end;    }
+  .overlay__bottom-start { align-self: end;    justify-self: start;  }
+  .overlay__bottom-end   { align-self: end;    justify-self: end;    }
+  .overlay__center       { align-self: center; justify-self: center; }
+  .overlay__stretch      { align-self: stretch; justify-self: stretch; }
+
+  /* ── Container Query Card ──────────────────────────────── */
+  /*  A card that reflows based on its container width,
+      not the screen. Wrap in .cq to activate.              */
+  .cq-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  @container (min-width: 480px) {
+    .cq-card {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .cq-card__media { flex: 0 0 160px; }
+    .cq-card__body  { flex: 1 1 0%; }
+  }
+
+  @container (min-width: 720px) {
+    .cq-card__media { flex: 0 0 240px; }
+  }
+}
+
+
+/* ================================================================
+   LAYER: utilities  —  Logical properties + RTL support
+   ================================================================ */
+@layer utilities {
+
+  /* ── Display ───────────────────────────────────────────── */
+  .block        { display: block; }
+  .inline-block { display: inline-block; }
+  .inline       { display: inline; }
+  .hidden       { display: none; }
+  .sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ── Logical Margin ────────────────────────────────────── */
+  /* block (vertical) */
+  .mb-0 { margin-block: 0; }
+  .mb-1 { margin-block: var(--space-1); }
+  .mb-2 { margin-block: var(--space-2); }
+  .mb-3 { margin-block: var(--space-3); }
+  .mb-4 { margin-block: var(--space-4); }
+  .mb-5 { margin-block: var(--space-5); }
+  .mb-6 { margin-block: var(--space-6); }
+  .mb-7 { margin-block: var(--space-7); }
+  .mb-8 { margin-block: var(--space-8); }
+
+  .mbs-1 { margin-block-start: var(--space-1); }
+  .mbs-2 { margin-block-start: var(--space-2); }
+  .mbs-3 { margin-block-start: var(--space-3); }
+  .mbs-4 { margin-block-start: var(--space-4); }
+  .mbs-5 { margin-block-start: var(--space-5); }
+  .mbs-6 { margin-block-start: var(--space-6); }
+
+  .mbe-1 { margin-block-end: var(--space-1); }
+  .mbe-2 { margin-block-end: var(--space-2); }
+  .mbe-3 { margin-block-end: var(--space-3); }
+  .mbe-4 { margin-block-end: var(--space-4); }
+  .mbe-5 { margin-block-end: var(--space-5); }
+  .mbe-6 { margin-block-end: var(--space-6); }
+
+  /* inline (horizontal — RTL-safe) */
+  .mi-0 { margin-inline: 0; }
+  .mi-1 { margin-inline: var(--space-1); }
+  .mi-2 { margin-inline: var(--space-2); }
+  .mi-3 { margin-inline: var(--space-3); }
+  .mi-4 { margin-inline: var(--space-4); }
+  .mi-5 { margin-inline: var(--space-5); }
+  .mi-auto { margin-inline: auto; }
+
+  .mis-auto { margin-inline-start: auto; }
+  .mie-auto { margin-inline-end:   auto; }
+
+  /* ── Logical Padding ───────────────────────────────────── */
+  .pb-0 { padding-block: 0; }
+  .pb-1 { padding-block: var(--space-1); }
+  .pb-2 { padding-block: var(--space-2); }
+  .pb-3 { padding-block: var(--space-3); }
+  .pb-4 { padding-block: var(--space-4); }
+  .pb-5 { padding-block: var(--space-5); }
+  .pb-6 { padding-block: var(--space-6); }
+  .pb-7 { padding-block: var(--space-7); }
+  .pb-8 { padding-block: var(--space-8); }
+
+  .pi-0 { padding-inline: 0; }
+  .pi-1 { padding-inline: var(--space-1); }
+  .pi-2 { padding-inline: var(--space-2); }
+  .pi-3 { padding-inline: var(--space-3); }
+  .pi-4 { padding-inline: var(--space-4); }
+  .pi-5 { padding-inline: var(--space-5); }
+  .pi-6 { padding-inline: var(--space-6); }
+
+  /* ── Logical Sizing ────────────────────────────────────── */
+  .min-is-0    { min-inline-size: 0; }
+  .min-bs-0    { min-block-size: 0; }
+  .max-is-full { max-inline-size: 100%; }
+  .max-bs-full { max-block-size: 100%; }
+
+  /* ── Logical Border ────────────────────────────────────── */
+  .border-block       { border-block: 1px solid var(--color-border); }
+  .border-block-start { border-block-start: 1px solid var(--color-border); }
+  .border-block-end   { border-block-end:   1px solid var(--color-border); }
+  .border-inline      { border-inline: 1px solid var(--color-border); }
+  .border-inline-start{ border-inline-start: 1px solid var(--color-border); }
+  .border-inline-end  { border-inline-end:   1px solid var(--color-border); }
+
+  /* ── RTL Support ───────────────────────────────────────── */
+  [dir="rtl"] .flip-rtl {
+    transform: scaleX(-1);
+  }
+
+  /* Text alignment — logical */
+  .text-start  { text-align: start; }
+  .text-end    { text-align: end; }
+  .text-center { text-align: center; }
+
+  /* ── Overflow ──────────────────────────────────────────── */
+  .overflow-hidden { overflow: hidden; }
+  .overflow-auto   { overflow: auto; }
+  .overflow-clip   { overflow: clip; }
+  .overflow-x-auto { overflow-x: auto; }
+  .overflow-y-auto { overflow-y: auto; }
+
+  /* ── Position ──────────────────────────────────────────── */
+  .relative { position: relative; }
+  .absolute { position: absolute; }
+  .sticky   { position: sticky; }
+  .fixed    { position: fixed; }
+
+  /* ── Responsive visibility (screen) ───────────────────── */
+  @media (max-width: 767px)  { .hide\@sm { display: none !important; } }
+  @media (min-width: 768px)  { .show\@sm { display: none !important; } }
+  @media (max-width: 1023px) { .hide\@md { display: none !important; } }
+  @media (min-width: 1024px) { .show\@md { display: none !important; } }
+}
+
+
+/* ================================================================
+   LAYER: overrides
+   User styles added here automatically win without !important.
+   ================================================================ */
+@layer overrides {
+  /* intentionally empty — users add their styles here */
+}
